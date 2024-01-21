@@ -1,0 +1,23 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Budget App</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {% tailwind_css %}
+</head>
+
+<body class=" bg-backgroundColor">
+    <div class="m-10 p-10 rounded-lg shadow-lg lg:max-w-7xl mx-auto  bg-whiteColor">
+        {% include 'core/navbar.html' %}
+        {% block content %}
+        {% endblock %}
+
+    </div>
+
+</body>
+
+</html>
