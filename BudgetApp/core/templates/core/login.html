@@ -1,0 +1,32 @@
+{% extends 'core/main.html' %}
+{% block content %}
+
+<div class="p-5 mt-10 tracking-wide font-mono text-gray-700  flex justify-center ">
+    <div class=" bg-gradient-to-b from-backgroundColor to-grayColor w-1/2 p-10 rounded-lg shadow-md">
+        <h1 class="text-3xl text-center mb-12 font-semibold text-shadow text-gray-600">Login</h1>
+        <form action="" method="POST" class="flex flex-col gap-5">
+            {% csrf_token %}
+            <div class="flex items-center gap-2">
+                <label for="username" class="text-lg">Username:</label>
+                <input type="text" name="username" class="w-full rounded-lg">
+            </div>
+            <div class="flex items-center gap-2">
+                <label for="password" class="text-lg">Password:</label>
+                <input type="password" name="password" class="w-full rounded-lg">
+            </div>
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li class="mb-5 p-4 font-mono rounded-2xl bg-red-400 text-gray-700">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            <div class="relative mb-5">
+                <button type="submit" class="btn-primary px-6 py-1.5 rounded-lg absolute right-0">Login</button>
+            </div>
+        </form>
+        <p class="pt-10 text-lg">Don't have an account? <a href="{% url 'signup' %}"
+                class=" text-[#077DC6] hover:text-[#0668A5] duration-300 ease-in">SignUp</a></p>
+    </div>
+</div>
+{% endblock %}

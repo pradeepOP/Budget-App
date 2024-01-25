@@ -1,0 +1,29 @@
+{% extends 'core/main.html' %}
+{% block content %}
+<div class="p-5 mt-10 tracking-wide font-mono text-gray-700 h-[65vh] flex justify-center items-center">
+    <form method="POST">
+        {% csrf_token %}
+        <div class="bg-grayColor shadow-md p-10 flex flex-col gap-8 rounded-lg">
+            <div class="space-y-5">
+                <h1 class="text-2xl text-[#e53e2d] tracking-normal font-semibold">Are you sure you want to delete this
+                    transaction ?</h1>
+                <p class="text-lg">Category: {{transaction.category}}</p>
+                <p class="text-lg">Description: {{transaction.description}}</p>
+                <p class="text-lg">Amount: ${% if not transaction.is_income %}-{% endif %}{{transaction.amount}}</p>
+            </div>
+            <div class="flex justify-around items-center">
+                <a href="{{request.META.HTTP_REFERER}}"><svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+                    </svg>
+                </a>
+                <button class="btn-delete px-6 py-1.5 rounded-lg ">Delete</button>
+            </div>
+        </div>
+
+    </form>
+
+
+</div>
+{% endblock %}
