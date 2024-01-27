@@ -6,8 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 
-from collections import defaultdict
-# Create your views here.
+from django.core.serializers import serialize
 
 
 def calculate_total_budget(request):
@@ -30,13 +29,17 @@ def calculate_total_budget(request):
 @login_required(login_url='login')
 def index(request):
     form = TransactionForm()
+
+    prev_budget = calculate_total_budget(request)
     if request.method == "POST":
-        form = TransactionForm(request.POST)
+        form = TransactionForm(
+            request.POST, prev_budget=prev_budget)
 
         if form.is_valid():
             transaction = form.save(commit=False)
             transaction.user = request.user
             transaction.save()
+
             return redirect('index')
 
         else:
@@ -58,9 +61,17 @@ def index(request):
 @login_required(login_url='login')
 def delete_transaction(request, pk):
     transaction = Transaction.objects.get(id=pk)
+
+    budget_before_del = calculate_total_budget(request)
+    amount = transaction.amount if transaction.is_income else -transaction.amount
     if request.method == 'POST':
-        transaction.delete()
-        return redirect('index')
+        referring_page = request.GET.get('referring_page', 'index')
+        if budget_before_del - amount >= 0:
+            transaction.delete()
+            return redirect(referring_page)
+        else:
+            messages.error(request, 'Budget cannot be negative')
+            return redirect(referring_page)
 
     context = {"transaction": transaction}
     return render(request, "core/delete_transaction.html", context)
@@ -127,3 +138,22 @@ def transactionView(request):
 
     context = {"transactions": transactions}
     return render(request, 'core/transactions.html', context)
+
+
+def chartView(request):
+    income_transaction = Transaction.objects.filter(
+        user=request.user, is_income=True)
+
+    expense_transaction = Transaction.objects.filter(
+        user=request.user, is_income=False)
+
+    total_income = sum(
+        transaction.amount for transaction in income_transaction)
+
+    total_expense = sum(
+        transaction.amount for transaction in expense_transaction)
+
+    context = {'total_expense': total_expense,
+               'total_income': total_income, }
+
+    return render(request, 'core/chart.html', context)

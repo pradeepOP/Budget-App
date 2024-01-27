@@ -11,11 +11,14 @@ class TransactionForm(ModelForm):
         fields = ["amount", "category", "description", "is_income"]
 
     def __init__(self, *args, **kwargs):
+        prev_budget = kwargs.pop('prev_budget', None)
         super(TransactionForm, self).__init__(*args, **kwargs)
+        self.budget = prev_budget
 
         self.fields["category"].widget.attrs.update({"class": "rounded-lg"})
         self.fields["amount"].widget.attrs.update(
-            {"class": "outline-none rounded-lg w-full"}
+            {"class": "outline-none rounded-lg w-full",
+                "placeholder": "Enter amount", "name": "amount"}
         )
         self.fields["description"].widget.attrs.update(
             {
@@ -24,27 +27,15 @@ class TransactionForm(ModelForm):
             }
         )
 
-    # def clean(self):
-    #     cleaned_data = super().clean()
-    #     # is_income = cleaned_data.get('is_income', False)
-    #     amount = cleaned_data.get('amount')
+    def clean(self):
+        cleaned_data = super().clean()
+        is_income = cleaned_data.get('is_income')
+        amount = cleaned_data.get('amount')
 
-    #     user = cleaned_data.get('user')
-    #     income_transaction = Transaction.objects.filter(
-    #         user=user, is_income=True)
-    #     expense_transaction = Transaction.objects.filter(
-    #         user=user, is_income=False)
+        amount = amount if is_income else -amount
 
-    #     total_income = sum(
-    #         transaction.amount for transaction in income_transaction)
-
-    #     total_expense = sum(
-    #         transaction.amount for transaction in expense_transaction)
-
-    #     budget = total_income - total_expense
-
-    #     if budget - amount < 0:
-    #         self.add_error('amount', 'Budget cannot be negative')
+        if self.budget + amount < 0:
+            self.add_error("amount", 'Budget cannot be negative')
 
 
 class signUpForm(UserCreationForm):
